@@ -34,16 +34,22 @@
             android:hint="Message"
             android:textAlignment="center" />
 
-        <TextView
-            android:id="@+id/display"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
 
         <Button
             android:id="@+id/sendBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Send" />
+
+        <ProgressBar
+            android:id="@+id/pb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/pbTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
 
     </LinearLayout>

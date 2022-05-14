@@ -43,14 +43,14 @@ import java.util.regex.Pattern;
 
 public class AttendanceActivity extends AppCompatActivity {
     ProgressBar pb;
-    TextView display;
-    TextView resultTxt;
+    TextView pbTxt;
     Button clickBtn;
     String resultString = "";
-    String emails="";
+    String emails = "";
     Button sendBtn;
     EditText subjectEditTxt;
     EditText messageEditTxt;
+    Boolean sendValue = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,23 +63,29 @@ public class AttendanceActivity extends AppCompatActivity {
         sendBtn = findViewById(R.id.sendBtn);
         subjectEditTxt = findViewById(R.id.subjectEditTxt);
         messageEditTxt = findViewById(R.id.messageEditTxt);
-        display = findViewById(R.id.display);
+        pb = findViewById(R.id.pb);
+        pbTxt = findViewById(R.id.pbTxt);
 
+        pb.setVisibility(View.INVISIBLE);
+        pbTxt.setText("");
 
         clickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent data = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                 data.setType("*/*");
                 data = Intent.createChooser(data, "Choose file data");
                 intentActivityResultLauncher.launch(data);
             }
         });
-
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(resultString==""){
+                    Toast.makeText(getApplicationContext(),"Please Select File",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                pb.setVisibility(View.VISIBLE);
                 List<String> email = new ArrayList<>();
                 List<String> name = new ArrayList<>();
                 List<String> percentage = new ArrayList<>();
@@ -103,17 +109,16 @@ public class AttendanceActivity extends AppCompatActivity {
                     percentage.add(String.valueOf(Math.round(Float.parseFloat(matcher2.group()))));
                 }
                 for (int i = 0; i < name.size(); i++) {
-                    if (name.get(i) != null && email.get(i) != null && percentage.get(i) != null && Integer.parseInt(percentage.get(i+1)) < 75) {
+                    if (name.get(i) != null && email.get(i) != null && percentage.get(i) != null && Integer.parseInt(percentage.get(i + 1)) < 75) {
                         resultEmail.add(email.get(i));
                     } else {
                         continue;
                     }
                 }
-                for(int j=0;j<resultEmail.size();j++){
-                    emails = emails+ resultEmail.get(j)+",";
+                for (int j = 0; j < resultEmail.size(); j++) {
+                    emails = emails + resultEmail.get(j) + ",";
 
                 }
-                display.setText(emails);
 
                 try {
                     String messageText = messageEditTxt.getText().toString();
@@ -147,22 +152,22 @@ public class AttendanceActivity extends AppCompatActivity {
                         recipientAddress[counter] = new InternetAddress(recipient.trim());
                         counter++;
                     }
-                    message.setRecipients(Message.RecipientType.TO, recipientAddress);
+                    message.setRecipients(Message.RecipientType.TO,recipientAddress);
                     message.setSubject(subjectText);
                     message.setText(messageText);
                     Thread thread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-
                             try {
                                 Transport.send(message);
+                                pb.setVisibility(View.INVISIBLE);
                             } catch (MessagingException e) {
                                 e.printStackTrace();
                             }
 
                         }
                     });
-
+                    Toast.makeText(getApplicationContext(),"Message Sent Successfully",Toast.LENGTH_LONG).show();
                     thread.start();
 
                 } catch (Exception e) {
@@ -170,9 +175,12 @@ public class AttendanceActivity extends AppCompatActivity {
                 }
 
             }
+
         });
 
     }
+
+
 
 
     ActivityResultLauncher<Intent> intentActivityResultLauncher = registerForActivityResult(

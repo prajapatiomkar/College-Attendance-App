@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 doIt();
             }
-        }, 3000);
+        }, 2000);
     }
 
     private void doIt() {
